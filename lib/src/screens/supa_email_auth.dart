@@ -11,14 +11,23 @@ class SupaEmailAuth extends StatefulWidget {
   final String? redirectUrl;
   final void Function(GotrueSessionResponse response)? onSuccess;
   final bool Function(GoTrueException error)? onError;
+  final void Function(String email)? onEmailChange;
+  final void Function(String password)? onPasswordChange;
 
-  const SupaEmailAuth(
-      {Key? key,
-      required this.authAction,
-      this.redirectUrl,
-      this.onSuccess,
-      this.onError})
-      : super(key: key);
+  final String? initialEmail;
+  final String? initialPassword;
+
+  const SupaEmailAuth({
+    Key? key,
+    required this.authAction,
+    this.redirectUrl,
+    this.onSuccess,
+    this.onError,
+    this.onEmailChange,
+    this.onPasswordChange,
+    this.initialEmail,
+    this.initialPassword,
+  }) : super(key: key);
 
   @override
   State<SupaEmailAuth> createState() => _SupaEmailAuthState();
@@ -41,9 +50,19 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
   }
 
   @override
+  void initState() {
+    if (widget.initialEmail != null) {
+      _email.text = widget.initialEmail!;
+    }
+    if (widget.initialPassword != null) {
+      _password.text = widget.initialPassword!;
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isSigningIn = widget.authAction == AuthAction.signIn;
-
     return Form(
       autovalidateMode: AutovalidateMode.onUserInteraction,
       key: _formKey,
@@ -64,6 +83,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
               hintText: 'Enter your email',
             ),
             controller: _email,
+            onChanged: widget.onEmailChange,
           ),
           spacer(16),
           TextFormField(
@@ -79,6 +99,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
             ),
             obscureText: true,
             controller: _password,
+            onChanged: widget.onPasswordChange,
           ),
           spacer(16),
           ElevatedButton(

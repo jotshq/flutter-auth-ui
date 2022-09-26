@@ -8,10 +8,17 @@ class SupaMagicAuth extends StatefulWidget {
   final String? redirectUrl;
   final void Function(GotrueSessionResponse response)? onSuccess;
   final bool Function(GoTrueException error)? onError;
+  final void Function(String email)? onEmailChange;
+  final String? initialEmail;
 
-  const SupaMagicAuth(
-      {Key? key, this.redirectUrl, this.onSuccess, this.onError})
-      : super(key: key);
+  const SupaMagicAuth({
+    Key? key,
+    this.redirectUrl,
+    this.onSuccess,
+    this.onError,
+    this.onEmailChange,
+    this.initialEmail,
+  }) : super(key: key);
 
   @override
   State<SupaMagicAuth> createState() => _SupaMagicAuthState();
@@ -29,6 +36,12 @@ class _SupaMagicAuthState extends State<SupaMagicAuth> {
   void dispose() {
     _email.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    if (widget.initialEmail != null) _email.text = widget.initialEmail!;
+    super.initState();
   }
 
   @override
@@ -53,6 +66,7 @@ class _SupaMagicAuthState extends State<SupaMagicAuth> {
               hintText: 'Enter your email',
             ),
             controller: _email,
+            onChanged: widget.onEmailChange,
           ),
           spacer(16),
           ElevatedButton(

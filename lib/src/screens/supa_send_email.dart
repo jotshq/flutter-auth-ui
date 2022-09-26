@@ -8,10 +8,18 @@ class SupaSendEmail extends StatefulWidget {
   final String? redirectUrl;
   final void Function(GotrueJsonResponse response)? onSuccess;
   final bool Function(GoTrueException error)? onError;
+  final void Function(String email)? onEmailChange;
 
-  const SupaSendEmail(
-      {Key? key, this.redirectUrl, this.onSuccess, this.onError})
-      : super(key: key);
+  final String? initialEmail;
+
+  const SupaSendEmail({
+    Key? key,
+    this.redirectUrl,
+    this.onSuccess,
+    this.onError,
+    this.onEmailChange,
+    this.initialEmail,
+  }) : super(key: key);
 
   @override
   State<SupaSendEmail> createState() => _SupaSendEmailState();
@@ -29,6 +37,14 @@ class _SupaSendEmailState extends State<SupaSendEmail> {
   void dispose() {
     _email.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    if (widget.initialEmail != null) {
+      _email.text = widget.initialEmail!;
+    }
+    super.initState();
   }
 
   @override
@@ -53,6 +69,7 @@ class _SupaSendEmailState extends State<SupaSendEmail> {
               hintText: 'Enter your email',
             ),
             controller: _email,
+            onChanged: widget.onEmailChange,
           ),
           spacer(16),
           ElevatedButton(
