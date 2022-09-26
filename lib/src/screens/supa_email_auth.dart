@@ -11,13 +11,15 @@ class SupaEmailAuth extends StatefulWidget {
   final String? redirectUrl;
   final void Function(GotrueSessionResponse response)? onSuccess;
   final bool Function(GoTrueException error)? onError;
+  final String? initialEmail;
 
   const SupaEmailAuth(
       {Key? key,
       required this.authAction,
       this.redirectUrl,
       this.onSuccess,
-      this.onError})
+      this.onError,
+      this.initialEmail})
       : super(key: key);
 
   @override
@@ -42,6 +44,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.initialEmail != null) _email.text = widget.initialEmail!;
     final isSigningIn = widget.authAction == AuthAction.signIn;
 
     return Form(
