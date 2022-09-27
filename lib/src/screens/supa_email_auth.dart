@@ -43,10 +43,14 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     if (widget.initialEmail != null) _email.text = widget.initialEmail!;
-    final isSigningIn = widget.authAction == AuthAction.signIn;
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    final isSigningIn = widget.authAction == AuthAction.signIn;
     return Form(
       autovalidateMode: AutovalidateMode.onUserInteraction,
       key: _formKey,
