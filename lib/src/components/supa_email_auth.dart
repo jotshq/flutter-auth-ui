@@ -191,6 +191,10 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                             (metaDataField, controller) =>
                                 MapEntry(metaDataField.key, controller.text)),
                   );
+                  final response2 = await supaClient.auth.signIn(
+                    email: _email.text,
+                    password: _password.text,
+                  );
                 }
                 widget.onSuccess.call(response);
               } catch (error) {
