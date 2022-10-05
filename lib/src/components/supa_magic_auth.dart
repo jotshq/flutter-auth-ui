@@ -11,7 +11,7 @@ class SupaMagicAuth extends StatefulWidget {
   final String? redirectUrl;
 
   /// Method to be called when the auth action is success
-  final void Function(Session response) onSuccess;
+  final void Function() onSuccess;
 
   /// Method to be called when the auth action threw an excepction
   final void Function(Object error)? onError;
@@ -39,9 +39,7 @@ class _SupaMagicAuthState extends State<SupaMagicAuth> {
     super.initState();
     _gotrueSubscription =
         Supabase.instance.client.auth.onAuthStateChange((event, session) {
-      if (session != null && mounted) {
-        widget.onSuccess(session);
-      }
+      if (session != null && mounted) {}
     });
   }
 
@@ -105,6 +103,7 @@ class _SupaMagicAuthState extends State<SupaMagicAuth> {
                 );
                 if (mounted) {
                   context.showSnackBar('Check your email inbox!');
+                  widget.onSuccess();
                 }
               } catch (error) {
                 handleError(context, error, widget.onError);
