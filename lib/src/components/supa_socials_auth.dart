@@ -143,7 +143,7 @@ class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: List.generate(
         providers.length,
         (index) => Container(
@@ -154,9 +154,9 @@ class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
               color: coloredBg ? Colors.white : Colors.black,
             ),
             style: ButtonStyle(
-              minimumSize: MaterialStateProperty.all(
-                const Size(double.infinity, 0),
-              ),
+              // minimumSize: MaterialStateProperty.all(
+              //   const Size(double.infinity, 0),
+              // ),
               padding: MaterialStateProperty.all(const EdgeInsets.all(15)),
               backgroundColor: MaterialStateProperty.all(
                   coloredBg ? providers[index]._btnBgColor : null),

@@ -100,115 +100,117 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
   Widget build(BuildContext context) {
     final isSigningIn = widget.authAction == SupaAuthAction.signIn;
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          TextFormField(
-            validator: (value) {
-              if (value == null ||
-                  value.isEmpty ||
-                  !EmailValidator.validate(_email.text)) {
-                return 'Please enter a valid email address';
-              }
-              return null;
-            },
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.email),
-              label: Text('Enter your email'),
-            ),
-            controller: _email,
-          ),
-          spacer(16),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty || value.length < 6) {
-                return 'Please enter a password that is at least 6 characters long';
-              }
-              return null;
-            },
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.lock),
-              label: Text('Enter your password'),
-            ),
-            obscureText: true,
-            controller: _password,
-          ),
-          spacer(16),
-          if (widget.metadataFields != null)
-            ...widget.metadataFields!
-                .map((metadataField) => [
-                      TextFormField(
-                        controller: _metadataControllers[metadataField],
-                        decoration: InputDecoration(
-                          label: Text(metadataField.label),
-                          prefixIcon: metadataField.prefixIcon,
-                        ),
-                        validator: metadataField.validator,
-                      ),
-                      spacer(16),
-                    ])
-                .expand((element) => element),
-          ElevatedButton(
-            child: (_isLoading)
-                ? const SizedBox(
-                    height: 16,
-                    width: 16,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 1.5,
-                    ),
-                  )
-                : Text(
-                    isSigningIn ? 'Sign In' : 'Sign Up',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-            onPressed: () async {
-              if (!_formKey.currentState!.validate()) {
-                return;
-              }
-              setState(() {
-                _isLoading = true;
-              });
-              try {
-                late final GotrueSessionResponse response;
-                if (isSigningIn) {
-                  response = await supaClient.auth.signIn(
-                    email: _email.text,
-                    password: _password.text,
-                  );
-                } else {
-                  response = await supaClient.auth.signUp(
-                    _email.text,
-                    _password.text,
-                    options: AuthOptions(
-                      redirectTo: widget.redirectUrl,
-                    ),
-                    userMetadata: widget.metadataFields == null
-                        ? null
-                        : _metadataControllers.map<String, dynamic>(
-                            (metaDataField, controller) =>
-                                MapEntry(metaDataField.key, controller.text)),
-                  );
-                  final response2 = await supaClient.auth.signIn(
-                    email: _email.text,
-                    password: _password.text,
-                  );
+    return Center(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextFormField(
+              validator: (value) {
+                if (value == null ||
+                    value.isEmpty ||
+                    !EmailValidator.validate(_email.text)) {
+                  return 'Please enter a valid email address';
                 }
-                widget.onSuccess.call(response);
-              } catch (error) {
-                handleError(context, error, widget.onError);
-              }
-              if (mounted) {
+                return null;
+              },
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.email),
+                label: Text('Enter your email'),
+              ),
+              controller: _email,
+            ),
+            spacer(16),
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty || value.length < 6) {
+                  return 'Please enter a password that is at least 6 characters long';
+                }
+                return null;
+              },
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.lock),
+                label: Text('Enter your password'),
+              ),
+              obscureText: true,
+              controller: _password,
+            ),
+            spacer(16),
+            if (widget.metadataFields != null)
+              ...widget.metadataFields!
+                  .map((metadataField) => [
+                        TextFormField(
+                          controller: _metadataControllers[metadataField],
+                          decoration: InputDecoration(
+                            label: Text(metadataField.label),
+                            prefixIcon: metadataField.prefixIcon,
+                          ),
+                          validator: metadataField.validator,
+                        ),
+                        spacer(16),
+                      ])
+                  .expand((element) => element),
+            ElevatedButton(
+              child: (_isLoading)
+                  ? const SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 1.5,
+                      ),
+                    )
+                  : Text(
+                      isSigningIn ? 'Sign In' : 'Sign Up',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+              onPressed: () async {
+                if (!_formKey.currentState!.validate()) {
+                  return;
+                }
                 setState(() {
-                  _isLoading = false;
+                  _isLoading = true;
                 });
-              }
-            },
-          ),
-          spacer(10),
-        ],
+                try {
+                  late final GotrueSessionResponse response;
+                  if (isSigningIn) {
+                    response = await supaClient.auth.signIn(
+                      email: _email.text,
+                      password: _password.text,
+                    );
+                  } else {
+                    response = await supaClient.auth.signUp(
+                      _email.text,
+                      _password.text,
+                      options: AuthOptions(
+                        redirectTo: widget.redirectUrl,
+                      ),
+                      userMetadata: widget.metadataFields == null
+                          ? null
+                          : _metadataControllers.map<String, dynamic>(
+                              (metaDataField, controller) =>
+                                  MapEntry(metaDataField.key, controller.text)),
+                    );
+                    final response2 = await supaClient.auth.signIn(
+                      email: _email.text,
+                      password: _password.text,
+                    );
+                  }
+                  widget.onSuccess.call(response);
+                } catch (error) {
+                  handleError(context, error, widget.onError);
+                }
+                if (mounted) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                }
+              },
+            ),
+            spacer(10),
+          ],
+        ),
       ),
     );
   }
