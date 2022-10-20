@@ -172,26 +172,32 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                 _isLoading = true;
               });
               try {
-                late final GotrueSessionResponse response;
+                late GotrueSessionResponse response;
                 if (isSigningIn) {
                   response = await supaClient.auth.signIn(
                     email: _email.text,
                     password: _password.text,
                   );
                 } else {
-                  response = await supaClient.auth.signUp(
-                    _email.text,
-                    _password.text,
-                    options: AuthOptions(
-                      redirectTo: widget.redirectUrl,
-                    ),
-                    userMetadata: widget.metadataFields == null
-                        ? null
-                        : _metadataControllers.map<String, dynamic>(
-                            (metaDataField, controller) =>
-                                MapEntry(metaDataField.key, controller.text)),
-                  );
-                  final response2 = await supaClient.auth.signIn(
+                  try {
+                    await supaClient.auth.signUp(
+                      _email.text,
+                      _password.text,
+                      options: AuthOptions(
+                        redirectTo: widget.redirectUrl,
+                      ),
+                      userMetadata: widget.metadataFields == null
+                          ? null
+                          : _metadataControllers.map<String, dynamic>(
+                              (metaDataField, controller) =>
+                                  MapEntry(metaDataField.key, controller.text)),
+                    );
+                  } on GoTrueException catch (error) {
+                    if (error.message != 'User already registered') {
+                      rethrow;
+                    }
+                  }
+                  response = await supaClient.auth.signIn(
                     email: _email.text,
                     password: _password.text,
                   );
