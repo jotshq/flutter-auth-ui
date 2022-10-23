@@ -49,7 +49,7 @@ class SupaEmailAuth extends StatefulWidget {
   final String? redirectUrl;
 
   /// Method to be called when the auth action is success
-  final void Function(GotrueSessionResponse response) onSuccess;
+  final void Function(AuthResponse response) onSuccess;
 
   /// Method to be called when the auth action threw an excepction
   final void Function(Object error)? onError;
@@ -172,32 +172,30 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                 _isLoading = true;
               });
               try {
-                late GotrueSessionResponse response;
+                late AuthResponse response;
                 if (isSigningIn) {
-                  response = await supaClient.auth.signIn(
+                  response = await supaClient.auth.signInWithPassword(
                     email: _email.text,
                     password: _password.text,
                   );
                 } else {
                   try {
                     await supaClient.auth.signUp(
-                      _email.text,
-                      _password.text,
-                      options: AuthOptions(
-                        redirectTo: widget.redirectUrl,
-                      ),
-                      userMetadata: widget.metadataFields == null
+                      email: _email.text,
+                      password: _password.text,
+                      emailRedirectTo: widget.redirectUrl,
+                      data: widget.metadataFields == null
                           ? null
                           : _metadataControllers.map<String, dynamic>(
                               (metaDataField, controller) =>
                                   MapEntry(metaDataField.key, controller.text)),
                     );
-                  } on GoTrueException catch (error) {
+                  } on AuthException catch (error) {
                     if (error.message != 'User already registered') {
                       rethrow;
                     }
                   }
-                  response = await supaClient.auth.signIn(
+                  response = await supaClient.auth.signInWithPassword(
                     email: _email.text,
                     password: _password.text,
                   );

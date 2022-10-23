@@ -1,7 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_auth_ui/src/utils/constants.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// UI component to create password reset form
 class SupaSendEmail extends StatefulWidget {
@@ -11,7 +10,7 @@ class SupaSendEmail extends StatefulWidget {
   final String? redirectUrl;
 
   /// Method to be called when the auth action is success
-  final void Function(GotrueJsonResponse response) onSuccess;
+  final void Function() onSuccess;
 
   /// Method to be called when the auth action threw an excepction
   final void Function(Object error)? onError;
@@ -84,16 +83,13 @@ class _SupaSendEmailState extends State<SupaSendEmail> {
                 _isLoading = true;
               });
               try {
-                final response =
-                    await supaClient.auth.api.resetPasswordForEmail(
+                await supaClient.auth.resetPasswordForEmail(
                   _email.text,
-                  options: AuthOptions(
-                    redirectTo: widget.redirectUrl,
-                  ),
+                  redirectTo: widget.redirectUrl,
                 );
                 if (mounted) {
                   context.showSnackBar('Check your email inbox!');
-                  widget.onSuccess.call(response);
+                  widget.onSuccess.call();
                 }
               } catch (error) {
                 handleError(context, error, widget.onError);

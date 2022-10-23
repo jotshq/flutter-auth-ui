@@ -113,19 +113,14 @@ class SupaSocialsAuth extends StatefulWidget {
 }
 
 class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
-  late final GotrueSubscription _gotrueSubscription;
-
   @override
   void initState() {
     super.initState();
-    _gotrueSubscription =
-        Supabase.instance.client.auth.onAuthStateChange((event, session) {});
   }
 
   @override
   void dispose() {
     super.dispose();
-    _gotrueSubscription.data?.unsubscribe();
   }
 
   @override
@@ -158,11 +153,9 @@ class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
             ),
             onPressed: () async {
               try {
-                await supaClient.auth.signInWithProvider(
+                await supaClient.auth.signInWithOAuth(
                   providers[index].provider,
-                  options: AuthOptions(
-                    redirectTo: widget.redirectUrl,
-                  ),
+                  redirectTo: widget.redirectUrl,
                 );
                 if (mounted) {
                   widget.onSuccess.call();

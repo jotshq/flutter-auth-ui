@@ -30,23 +30,18 @@ class SupaMagicAuth extends StatefulWidget {
 class _SupaMagicAuthState extends State<SupaMagicAuth> {
   final _formKey = GlobalKey<FormState>();
   final _email = TextEditingController();
-  late final GotrueSubscription _gotrueSubscription;
 
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _gotrueSubscription =
-        Supabase.instance.client.auth.onAuthStateChange((event, session) {
-      if (session != null && mounted) {}
-    });
   }
 
   @override
   void dispose() {
     _email.dispose();
-    _gotrueSubscription.data?.unsubscribe();
+
     super.dispose();
   }
 
@@ -95,11 +90,9 @@ class _SupaMagicAuthState extends State<SupaMagicAuth> {
                 _isLoading = true;
               });
               try {
-                final result = await supaClient.auth.signIn(
+                await supaClient.auth.signInWithOtp(
                   email: _email.text,
-                  options: AuthOptions(
-                    redirectTo: widget.redirectUrl,
-                  ),
+                  emailRedirectTo: widget.redirectUrl,
                 );
                 if (mounted) {
                   context.showSnackBar('Check your email inbox!');

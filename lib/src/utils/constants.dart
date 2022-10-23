@@ -46,7 +46,7 @@ void handleError(
     onError.call(error);
     return;
   }
-  if (error is GoTrueException) {
+  if (error is AuthException) {
     context.showErrorSnackBar(error.message);
   } else {
     context.showErrorSnackBar('Unexpected error has occurred: $error');
