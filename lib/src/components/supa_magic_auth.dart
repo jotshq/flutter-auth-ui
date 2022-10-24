@@ -66,6 +66,29 @@ class _SupaMagicAuthState extends State<SupaMagicAuth> {
               label: Text('Enter your email'),
             ),
             controller: _email,
+            onFieldSubmitted: (value) async {
+              if (!_formKey.currentState!.validate()) {
+                return;
+              }
+              setState(() {
+                _isLoading = true;
+              });
+              try {
+                await supaClient.auth.signInWithOtp(
+                  email: _email.text,
+                  emailRedirectTo: widget.redirectUrl,
+                );
+                if (mounted) {
+                  context.showSnackBar('Check your email inbox!');
+                  widget.onSuccess();
+                }
+              } catch (error) {
+                handleError(context, error, widget.onError);
+              }
+              setState(() {
+                _isLoading = false;
+              });
+            },
           ),
           spacer(16),
           ElevatedButton(

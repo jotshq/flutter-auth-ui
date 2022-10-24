@@ -59,6 +59,33 @@ class _SupaSendEmailState extends State<SupaSendEmail> {
               label: Text('Enter your email'),
             ),
             controller: _email,
+            onFieldSubmitted: (value) async {
+              if (!_formKey.currentState!.validate()) {
+                return;
+              }
+              setState(() {
+                _isLoading = true;
+              });
+              try {
+                await supaClient.auth.resetPasswordForEmail(
+                  _email.text,
+                  redirectTo: widget.redirectUrl,
+                );
+                if (mounted) {
+                  context.showSnackBar('Check your email inbox!');
+                  widget.onSuccess.call();
+                }
+              } catch (error) {
+                handleError(context, error, widget.onError);
+              }
+              if (mounted) {
+                setState(
+                  () {
+                    _isLoading = false;
+                  },
+                );
+              }
+            },
           ),
           spacer(16),
           ElevatedButton(
@@ -95,9 +122,11 @@ class _SupaSendEmailState extends State<SupaSendEmail> {
                 handleError(context, error, widget.onError);
               }
               if (mounted) {
-                setState(() {
-                  _isLoading = false;
-                });
+                setState(
+                  () {
+                    _isLoading = false;
+                  },
+                );
               }
             },
           ),

@@ -134,6 +134,52 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
             ),
             obscureText: true,
             controller: _password,
+            onFieldSubmitted: (value) async {
+              if (!_formKey.currentState!.validate()) {
+                return;
+              }
+              setState(() {
+                _isLoading = true;
+              });
+              try {
+                late AuthResponse response;
+                if (isSigningIn) {
+                  response = await supaClient.auth.signInWithPassword(
+                    email: _email.text,
+                    password: _password.text,
+                  );
+                } else {
+                  try {
+                    await supaClient.auth.signUp(
+                      email: _email.text,
+                      password: _password.text,
+                      emailRedirectTo: widget.redirectUrl,
+                      data: widget.metadataFields == null
+                          ? null
+                          : _metadataControllers.map<String, dynamic>(
+                              (metaDataField, controller) =>
+                                  MapEntry(metaDataField.key, controller.text)),
+                    );
+                  } on AuthException catch (error) {
+                    if (error.message != 'User already registered') {
+                      rethrow;
+                    }
+                  }
+                  response = await supaClient.auth.signInWithPassword(
+                    email: _email.text,
+                    password: _password.text,
+                  );
+                }
+                widget.onSuccess.call(response);
+              } catch (error) {
+                handleError(context, error, widget.onError);
+              }
+              if (mounted) {
+                setState(() {
+                  _isLoading = false;
+                });
+              }
+            },
           ),
           spacer(16),
           if (widget.metadataFields != null)
